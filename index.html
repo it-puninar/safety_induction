@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Safety Induction — Puninar Logistics</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* ── Brand colors (from logo) ── */
+      --indigo:       #2c2a8e;   /* PUNINAR blue-indigo */
+      --indigo-dark:  #1e1c6e;
+      --indigo-light: #3d3bb0;
+      --gold:         #f5a300;   /* LOGISTICS gold */
+      --gold-dark:    #d48c00;
+      --gold-light:   #ffc033;
+
+      /* ── UI colors ── */
+      --green:  #1e9e54;
+      --red:    #d63031;
+      --bg:     #f2f3f8;
+      --card:   #ffffff;
+      --border: #dde0f0;
+      --text:   #1a1838;
+      --muted:  #6b6e8a;
+
+      --shadow-sm: 0 2px 8px rgba(44,42,142,.07);
+      --shadow-md: 0 4px 20px rgba(44,42,142,.10);
+      --shadow-lg: 0 8px 40px rgba(44,42,142,.15);
+      --radius: 14px;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ══════════════════════════════════════
+       HEADER
+    ══════════════════════════════════════ */
+
+    .header {
+      background: #fff;
+      border-bottom: 4px solid var(--indigo);
+      box-shadow: 0 2px 16px rgba(44,42,142,.10);
+    }
+
+    .header-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 14px 32px;
+    }
+
+    .header-logo img {
+      height: 56px;
+      width: auto;
+      display: block;
+      object-fit: contain;
+    }
+
+    .header-divider {
+      width: 1.5px;
+      height: 40px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+
+    .header-info h1 {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--indigo);
+      line-height: 1.2;
+    }
+    .header-info p {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 3px;
+      font-weight: 500;
+    }
+
+    /* ══════════════════════════════════════
+       LAYOUT
+    ══════════════════════════════════════ */
+
+    .container {
+      max-width: 840px;
+      margin: 0 auto;
+      padding: 32px 20px 52px;
+    }
+
+    /* ── WELCOME ─────────────────────────── */
+    .welcome-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      margin-bottom: 26px;
+      border: 1px solid rgba(245,163,0,.2);
+    }
+    .welcome-body {
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+      color: var(--indigo-dark);
+      padding: 22px 28px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .welcome-icon { font-size: 36px; flex-shrink: 0; line-height: 1; }
+    .welcome-body h2 {
+      font-size: 16px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: var(--indigo-dark);
+    }
+    .welcome-body p {
+      font-size: 13.5px;
+      line-height: 1.6;
+      opacity: .88;
+    }
+
+    /* ── SECTION CARD ───────────────────── */
+    .section-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 26px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .section-head {
+      background: var(--indigo);
+      color: #fff;
+      padding: 14px 26px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-head::after {
+      content: '';
+      display: block;
+      height: 3px;
+      background: var(--gold);
+      width: 40px;
+      border-radius: 2px;
+      margin-left: auto;
+    }
+    .section-tag {
+      width: 30px; height: 30px;
+      background: var(--gold);
+      color: var(--indigo-dark);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 900;
+      flex-shrink: 0;
+    }
+    .section-head h3 { font-size: 15px; font-weight: 700; }
+
+    .section-body { padding: 28px 28px 24px; }
+
+    /* ── FORM ────────────────────────────── */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 22px;
+    }
+    .form-group { margin-bottom: 20px; }
+    .form-group:last-child { margin-bottom: 0; }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .form-label .req { color: var(--red); }
+
+    .form-hint {
+      font-size: 11.5px;
+      color: var(--muted);
+      font-style: italic;
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      font-size: 14px;
+      color: var(--text);
+      font-family: inherit;
+      background: #fafbfd;
+      transition: border .18s, box-shadow .18s;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--indigo-light);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(44,42,142,.1);
+    }
+    .form-control::placeholder { color: #b0b4c8; }
+    .form-control.is-error { border-color: var(--red); }
+    textarea.form-control { resize: vertical; min-height: 80px; }
+
+    .err-msg {
+      font-size: 12px;
+      color: var(--red);
+      margin-top: 5px;
+      display: none;
+    }
+    .err-msg.show { display: block; }
+
+    /* ── CHECKLIST ───────────────────────── */
+    .cl-info {
+      background: #eeeeff;
+      border-left: 4px solid var(--indigo-light);
+      border-radius: 0 9px 9px 0;
+      padding: 13px 16px;
+      font-size: 13px;
+      color: var(--indigo);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 22px;
+      line-height: 1.55;
+    }
+    .cl-info-icon { font-size: 17px; flex-shrink: 0; }
+
+    .cl-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 15px 0;
+      border-bottom: 1px solid var(--border);
+      transition: background .15s;
+    }
+    .cl-item:first-of-type { padding-top: 0; }
+    .cl-item:last-of-type  { border-bottom: none; padding-bottom: 0; }
+
+    .cl-item.highlight {
+      background: #fff4f4;
+      border-radius: 8px;
+      padding: 12px;
+      border: 1px solid #f5c0c0;
+      margin-bottom: 4px;
+    }
+
+    .cl-num {
+      width: 28px; height: 28px;
+      background: var(--indigo);
+      color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .cl-body { flex: 1; }
+    .cl-text {
+      font-size: 14px;
+      line-height: 1.56;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .radio-wrap { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .radio-opt { position: relative; }
+    .radio-opt input { position: absolute; opacity: 0; width: 0; height: 0; }
+
+    .radio-lbl {
+      display: flex; align-items: center; gap: 7px;
+      padding: 8px 18px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer;
+      transition: all .18s;
+      user-select: none;
+      background: #fafbfd;
+      color: var(--muted);
+    }
+    .rdot {
+      width: 15px; height: 15px;
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      transition: all .18s;
+      flex-shrink: 0;
+    }
+
+    /* Ya — green */
+    .opt-ya input:checked + .radio-lbl {
+      background: #e8f8ef;
+      border-color: var(--green);
+      color: var(--green);
+    }
+    .opt-ya input:checked + .radio-lbl .rdot {
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    /* Tidak — red */
+    .opt-tidak input:checked + .radio-lbl {
+      background: #fdf0f0;
+      border-color: var(--red);
+      color: var(--red);
+    }
+    .opt-tidak input:checked + .radio-lbl .rdot {
+      background: var(--red);
+      border-color: var(--red);
+    }
+
+    .radio-lbl:hover { border-color: var(--indigo-light); background: #f0f0ff; color: var(--indigo); }
+
+    /* ── PROGRESS ────────────────────────── */
+    .progress-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      padding: 20px 26px;
+      margin-bottom: 22px;
+      border: 1px solid var(--border);
+    }
+    .progress-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .progress-label { font-size: 13.5px; font-weight: 700; color: var(--text); }
+    .progress-val   { font-size: 13px; color: var(--muted); }
+
+    .progress-bar {
+      height: 8px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--indigo), var(--gold));
+      transition: width .3s ease;
+      width: 0%;
+    }
+
+    /* ── ALERT ───────────────────────────── */
+    .alert {
+      background: #fff8e1;
+      border: 1px solid var(--gold);
+      color: #7a5800;
+      padding: 13px 18px;
+      border-radius: 9px;
+      font-size: 13px;
+      margin-bottom: 18px;
+      display: none;
+    }
+    .alert.show { display: block; }
+
+    /* ── SUBMIT ──────────────────────────── */
+    .submit-wrap { text-align: center; }
+
+    .btn-submit {
+      background: linear-gradient(135deg, var(--indigo) 0%, var(--indigo-dark) 100%);
+      color: #fff;
+      border: none;
+      padding: 15px 58px;
+      font-size: 15.5px;
+      font-weight: 700;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform .22s, box-shadow .22s;
+      box-shadow: 0 4px 18px rgba(44,42,142,.3);
+      letter-spacing: .4px;
+      position: relative;
+    }
+    .btn-submit::after {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 20%;
+      width: 60%;
+      height: 4px;
+      background: var(--gold);
+      border-radius: 0 0 4px 4px;
+      opacity: 0;
+      transition: opacity .22s;
+    }
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(44,42,142,.38);
+    }
+    .btn-submit:hover::after { opacity: 1; }
+    .btn-submit:active { transform: translateY(0); }
+
+    /* ══════════════════════════════════════
+       RESULT
+    ══════════════════════════════════════ */
+    #resultSection { display: none; }
+
+    .result-card {
+      background: var(--card);
+      border-radius: 20px;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      text-align: center;
+      animation: fadeUp .4s ease;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-head-pass {
+      background: linear-gradient(135deg, #1a7a45, var(--green));
+      padding: 52px 28px;
+      color: #fff;
+    }
+    .result-head-fail {
+      background: linear-gradient(135deg, #a01c1c, var(--red));
+      padding: 52px 28px;
+      color: #fff;
+    }
+    .result-icon-big { font-size: 78px; display: block; margin-bottom: 14px; }
+    .result-status   { font-size: 42px; font-weight: 900; letter-spacing: 3px; margin-bottom: 6px; }
+    .result-sub      { font-size: 15px; opacity: .88; }
+
+    .result-body { padding: 36px 44px; }
+
+    .score-chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #eeeeff;
+      color: var(--indigo);
+      padding: 11px 26px;
+      border-radius: 50px;
+      font-size: 15px; font-weight: 700;
+      margin-bottom: 28px;
+      border: 1.5px solid rgba(44,42,142,.15);
+    }
+
+    .result-table {
+      background: #f6f7fb;
+      border-radius: 11px;
+      padding: 18px 22px;
+      text-align: left;
+      margin-bottom: 24px;
+    }
+    .result-table h4 {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 13px;
+    }
+    .rt-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13.5px;
+      gap: 12px;
+    }
+    .rt-row:last-child { border-bottom: none; }
+    .rt-key { color: var(--muted); flex-shrink: 0; }
+    .rt-val { font-weight: 600; text-align: right; }
+
+    .result-msg {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 28px;
+    }
+
+    .btn-group { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+
+    .btn-outline {
+      background: #fff;
+      color: var(--indigo);
+      border: 2px solid var(--indigo);
+      padding: 12px 34px;
+      border-radius: 50px;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-outline:hover { background: var(--indigo); color: #fff; transform: translateY(-2px); }
+
+    .btn-primary {
+      background: var(--indigo);
+      color: #fff;
+      border: none;
+      padding: 12px 34px;
+      border-radius: 50px;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-primary:hover { background: var(--indigo-dark); transform: translateY(-2px); }
+
+    /* ── FOOTER ──────────────────────────── */
+    .footer {
+      background: var(--indigo-dark);
+      color: rgba(255,255,255,.55);
+      text-align: center;
+      padding: 22px 16px;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+    .footer strong { color: var(--gold); font-weight: 700; }
+
+    /* ── RESPONSIVE ─────────────────────── */
+    @media (max-width: 640px) {
+      .header-inner  { padding: 12px 18px; }
+      .header-divider { display: none; }
+      .section-body  { padding: 20px 18px; }
+      .form-row      { grid-template-columns: 1fr; }
+      .result-body   { padding: 24px 18px; }
+      .btn-submit    { width: 100%; padding: 15px 20px; }
+      .header-info h1 { font-size: 15px; }
+      .header-logo img { height: 42px; }
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="header-logo">
+      <img src="assets/Logo_Puninar-removebg-preview.png" alt="Puninar Logistics" />
+    </div>
+    <div class="header-divider"></div>
+    <div class="header-info">
+      <h1>Safety Induction</h1>
+      <p>Puninar Logistics — HSE Department</p>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════
+     FORM SECTION
+════════════════════════════════════════ -->
+<div class="container" id="formSection">
+
+  <!-- Welcome Banner -->
+  <div class="welcome-card">
+    <div class="welcome-body">
+      <span class="welcome-icon">👋</span>
+      <div>
+        <h2>Selamat Datang di Puninar Logistics</h2>
+        <p>Safety Induction merupakan aturan wajib yang harus dipenuhi oleh semua pekerja, tamu, dan visitor untuk menjaga keselamatan dan kesehatan kerja dalam mencapai <strong>Zero Accident</strong>. Harap mengisi formulir ini dengan jujur dan lengkap.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── A. Data Diri ─────────────────────── -->
+  <div class="section-card">
+    <div class="section-head">
+      <div class="section-tag">A</div>
+      <h3>Data Diri Pengunjung</h3>
+    </div>
+    <div class="section-body">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="fNama">1. Nama Lengkap <span class="req">*</span></label>
+          <div class="form-hint">Nama lengkap diisi sesuai No KTP</div>
+          <input type="text" id="fNama" class="form-control" placeholder="Nama sesuai KTP" autocomplete="off" />
+          <div class="err-msg" id="eNama">Nama lengkap wajib diisi</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="fKtp">2. No KTP <span class="req">*</span></label>
+          <div class="form-hint">Isi sesuai No KTP Anda</div>
+          <input type="text" id="fKtp" class="form-control" placeholder="16 digit nomor KTP" maxlength="16" inputmode="numeric" />
+          <div class="err-msg" id="eKtp">No KTP wajib diisi</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="fPerusahaan">3. Nama Perusahaan Anda <span class="req">*</span></label>
+        <input type="text" id="fPerusahaan" class="form-control" placeholder="Nama perusahaan asal" />
+        <div class="err-msg" id="ePerusahaan">Nama perusahaan wajib diisi</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="fTujuan">4. Tujuan Anda Datang ke Puninar Logistics <span class="req">*</span></label>
+        <input type="text" id="fTujuan" class="form-control" placeholder="Contoh: Pengiriman barang, kunjungan kerja, dll." />
+        <div class="err-msg" id="eTujuan">Tujuan kedatangan wajib diisi</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="fBagian">5. Nama dan Bagian yang Anda Kunjungi di Puninar Logistics <span class="req">*</span></label>
+        <input type="text" id="fBagian" class="form-control" placeholder="Contoh: Bapak Budi — Divisi Operasional" />
+        <div class="err-msg" id="eBagian">Nama dan bagian yang dikunjungi wajib diisi</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="fMaksud">6. Tuliskan Maksud dan Tujuan Anda <span class="req">*</span></label>
+        <textarea id="fMaksud" class="form-control" rows="3" placeholder="Jelaskan secara singkat maksud dan tujuan kunjungan Anda..."></textarea>
+        <div class="err-msg" id="eMaksud">Maksud dan tujuan wajib diisi</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── B. Checklist Keselamatan ─────────── -->
+  <div class="section-card">
+    <div class="section-head">
+      <div class="section-tag">B</div>
+      <h3>Pernyataan Keselamatan Kerja</h3>
+    </div>
+    <div class="section-body">
+
+      <div class="cl-info">
+        <span class="cl-info-icon">ℹ️</span>
+        <div>Baca setiap pernyataan dengan seksama dan berikan jawaban yang jujur. Seluruh <strong>10 pertanyaan wajib dijawab</strong> sebelum dapat melanjutkan.</div>
+      </div>
+
+      <!-- 1 -->
+      <div class="cl-item" id="ci1">
+        <div class="cl-num">1</div>
+        <div class="cl-body">
+          <div class="cl-text">Apakah anda sudah melaporkan diri ke Pos Security saat memasuki area Puninar?</div>
+          <div class="radio-wrap">
+            <div class="radio-opt opt-ya"><input type="radio" name="q1" id="q1y" value="ya" /><label class="radio-lbl" for="q1y"><span class="rdot"></span>Ya</label></div>
+            <div class="radio-opt opt-tidak"><input type="radio" name="q1" id="q1t" value="tidak" /><label class="radio-lbl" for="q1t"><span class="rdot"></span>Tidak</label></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2 -->
+      <div class="cl-item" id="ci2">
+        <div class="cl-num">2</div>
+        <div class="cl-body">
+          <div class="cl-text">Apakah anda sudah menggunakan seragam lengkap, sepatu dan identitas diri saat memasuki area Puninar?</div>
+          <div class="radio-wrap">
+            <div class="radio-opt opt-ya"><input type="radio" name="q2" id="q2y" value="ya" /><label class="radio-lbl" for="q2y"><span class="rdot"></span>Ya</label></div>
+            <div class="radio-opt opt-tidak"><input type="radio" name="q2" id="q2t" value="tidak" /><label class="radio-lbl" for="q2t"><span class="rdot"></span>Tidak</label></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 -->
+      <div class="cl-item" id="ci3">
+        <div class="cl-num">3</div>
+        <div class="cl-body">
+          <div class="cl-text">Apakah anda bersedia menggunakan Alat Pelindung Diri (APD) sesuai dengan standar APD yang telah ditetapkan?</div>
+          <div class="radio-wrap">
+            <div class="radio-opt opt-ya"><input type="radio" name="q3" id="q3y" value="ya" /><label class="radio-lbl" for="q3y"><span class="rdot"></span>Ya</label></div>
+            <div class="radio-opt opt-tidak"><input type="radio" name="q3" id="q3t" value="tidak" /><label class="radio-lbl" for="q3t"><span class="rdot"></span>Tidak</label></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 -->
+      <div class="cl-item" id="ci4">
+        <div class="cl-num">4</div>
+        <div class="cl-body">
+          <div class="cl-text">Anda bersedia mematuhi rambu-rambu dan tanda peringatan yang tersedia di area Puninar Logistics?</div>
+          <div class="radio-wrap">
+            <div class="radio-opt opt-ya"><input type="radio" name="q4" id="q4y" value="ya" /><label class="radio-lbl" for="q4y"><span class="rdot"></span>Ya</label></div>
+            <div class="radio-opt opt-tidak"><input type="radio" name="q4" id="q4t" value="tidak" /><label class="radio-lbl" for="q4t"><span class="rdot"></span>Tidak</label></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5 -->
+      <div class="cl-item" id="ci5">
+        <div class="cl-num">5</div>
+        <div class="cl-body">
+          <div class="cl-text">Anda bersedia mematuhi batas kecepatan kendaraan dalam kawasan Puninar Nagrak maksimal <strong>20 Km/Jam</strong>?</div>
+          <div class="radio-wrap">
+            <div class="radio-opt opt-ya"><input type="radio" name="q5" id="q5y" value="ya" /><label class="radio-lbl" for="q5y"><span class="rdot"></span>Ya</label></div>
+            <div class="radio-opt opt-tidak"><input type="radio" name="q5" id="q5t" value="tidak" /><label class="radio-lbl" for="q5t"><span class="rdot"></span>Tidak</label></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6 -->
+      <div class="cl-item" id="ci6">
+        <div class="cl-num">6</div>
+        <div class="cl-body">
+          <div class="cl-text">Anda bersedia saat berjalan kaki dan menyebrang untuk selalu berjalan pada jalur pejalan kaki dan jalur penyebrang yang tersedia?</div>
+          <div class="radio-wrap">
+            <div class="radio-opt opt-ya"><input type="radio" name="q6" id="q6y" value="ya" /><label class="radio-lbl" for="q6y"><span class="rdot"></span>Ya</label></div>
+            <div class="radio-opt opt-tidak"><input type="radio" name="q6" id="q6t" value="tidak" /><label class="radio-lbl" for="q6t"><span class="rdot"></span>Tidak</label></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7 -->
+      <div class="cl-item" id="ci7">
+        <div class="cl-num">7</div>
+        <div class="cl-body">
+          <div class="cl-text">Apakah anda bersedia untuk tidak menggunakan handphone saat berjalan kaki?</div>
+          <div class="radio-wrap">
+            <div class="radio-opt opt-ya"><input type="radio" name="q7" id="q7y" value="ya" /><label class="radio-lbl" for="q7y"><span class="rdot"></span>Ya</label></div>
+            <div class="radio-opt opt-tidak"><input type="radio" name="q7" id="q7t" value="tidak" /><label class="radio-lbl" for="q7t"><span class="rdot"></span>Tidak</label></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8 -->
+      <div class="cl-item" id="ci8">
+        <div class="cl-num">8</div>
+        <div class="cl-body">
+          <div class="cl-text">Anda bersedia untuk tidak mengambil foto/gambar menggunakan handphone atau kamera tanpa izin petugas/PIC Area?</div>
+          <div class="radio-wrap">
+            <div class="radio-opt opt-ya"><input type="radio" name="q8" id="q8y" value="ya" /><label class="radio-lbl" for="q8y"><span class="rdot"></span>Ya</label></div>
+            <div class="radio-opt opt-tidak"><input type="radio" name="q8" id="q8t" value="tidak" /><label class="radio-lbl" for="q8t"><span class="rdot"></span>Tidak</label></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 9 -->
+      <div class="cl-item" id="ci9">
+        <div class="cl-num">9</div>
+        <div class="cl-body">
+          <div class="cl-text">Anda bersedia untuk membuat izin kerja apabila ada aktivitas berisiko tinggi seperti bekerja di ketinggian, ruang tertutup, pekerjaan panas, listrik, dan penggalian lebih dari 50 cm?</div>
+          <div class="radio-wrap">
+            <div class="radio-opt opt-ya"><input type="radio" name="q9" id="q9y" value="ya" /><label class="radio-lbl" for="q9y"><span class="rdot"></span>Ya</label></div>
+            <div class="radio-opt opt-tidak"><input type="radio" name="q9" id="q9t" value="tidak" /><label class="radio-lbl" for="q9t"><span class="rdot"></span>Tidak</label></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10 -->
+      <div class="cl-item" id="ci10">
+        <div class="cl-num">10</div>
+        <div class="cl-body">
+          <div class="cl-text">Anda bersedia untuk melaporkan kepada petugas HSE dan Security jika menemukan potensi bahaya di area Puninar Logistics?</div>
+          <div class="radio-wrap">
+            <div class="radio-opt opt-ya"><input type="radio" name="q10" id="q10y" value="ya" /><label class="radio-lbl" for="q10y"><span class="rdot"></span>Ya</label></div>
+            <div class="radio-opt opt-tidak"><input type="radio" name="q10" id="q10t" value="tidak" /><label class="radio-lbl" for="q10t"><span class="rdot"></span>Tidak</label></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-card">
+    <div class="progress-top">
+      <span class="progress-label">Progress Pengisian Checklist</span>
+      <span class="progress-val" id="progText">0 / 10 pertanyaan dijawab</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progFill"></div>
+    </div>
+  </div>
+
+  <!-- Alert -->
+  <div class="alert" id="alertBox">
+    ⚠️ Harap lengkapi semua data diri dan jawab seluruh pertanyaan checklist sebelum submit.
+  </div>
+
+  <!-- Submit -->
+  <div class="submit-wrap">
+    <button class="btn-submit" onclick="onSubmit()">✅&nbsp; Submit Safety Induction</button>
+  </div>
+
+</div><!-- /formSection -->
+
+<!-- ═══════════════════════════════════════
+     RESULT SECTION
+════════════════════════════════════════ -->
+<div class="container" id="resultSection">
+  <div class="result-card">
+    <div id="rHead"></div>
+    <div class="result-body">
+      <div class="score-chip" id="rScore"></div>
+      <div class="result-table" id="rTable"></div>
+      <p class="result-msg" id="rMsg"></p>
+      <p id="dbStatus" style="display:none;font-size:13px;margin-bottom:16px;font-weight:600;"></p>
+      <div class="btn-group">
+        <button class="btn-primary" onclick="doReset()">🔄 Isi Ulang</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div>© 2024 <strong>Puninar Logistics</strong> — HSE Department | Safety Induction System</div>
+  <div>Terima kasih telah melengkapi Safety Induction Puninar, selamat bekerja dan bekerjalah dengan selamat.</div>
+</div>
+
+<script>
+  const TOTAL_Q   = 10;
+  // Ganti URL ini setelah Cloudflare Tunnel aktif
+  const BACKEND_URL = 'https://YOUR-TUNNEL.trycloudflare.com/backend/submit.php';
+
+  /* Progress */
+  document.querySelectorAll('input[type="radio"]').forEach(r =>
+    r.addEventListener('change', updateProgress)
+  );
+
+  function updateProgress() {
+    let n = 0;
+    for (let i = 1; i <= TOTAL_Q; i++)
+      if (document.querySelector(`input[name="q${i}"]:checked`)) n++;
+    document.getElementById('progFill').style.width = (n / TOTAL_Q * 100) + '%';
+    document.getElementById('progText').textContent = `${n} / ${TOTAL_Q} pertanyaan dijawab`;
+  }
+
+  /* Field map */
+  const FIELDS = [
+    { id: 'fNama',       eid: 'eNama' },
+    { id: 'fKtp',        eid: 'eKtp' },
+    { id: 'fPerusahaan', eid: 'ePerusahaan' },
+    { id: 'fTujuan',     eid: 'eTujuan' },
+    { id: 'fBagian',     eid: 'eBagian' },
+    { id: 'fMaksud',     eid: 'eMaksud' },
+  ];
+
+  FIELDS.forEach(({ id, eid }) => {
+    document.getElementById(id).addEventListener('input', () => {
+      document.getElementById(id).classList.remove('is-error');
+      document.getElementById(eid).classList.remove('show');
+    });
+  });
+
+  /* Validate */
+  function validate() {
+    let ok = true;
+    FIELDS.forEach(({ id, eid }) => {
+      const el = document.getElementById(id);
+      if (!el.value.trim()) {
+        el.classList.add('is-error');
+        document.getElementById(eid).classList.add('show');
+        ok = false;
+      }
+    });
+    for (let i = 1; i <= TOTAL_Q; i++) {
+      const item = document.getElementById(`ci${i}`);
+      if (!document.querySelector(`input[name="q${i}"]:checked`)) {
+        item.classList.add('highlight'); ok = false;
+      } else {
+        item.classList.remove('highlight');
+      }
+    }
+    return ok;
+  }
+
+  /* Submit */
+  function onSubmit() {
+    document.getElementById('alertBox').classList.remove('show');
+    if (!validate()) {
+      document.getElementById('alertBox').classList.add('show');
+      const first = document.querySelector('.is-error') || document.querySelector('.highlight');
+      if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    // Kumpulkan payload
+    const payload = {
+      nama_lengkap:           document.getElementById('fNama').value.trim(),
+      no_ktp:                 document.getElementById('fKtp').value.trim(),
+      nama_perusahaan:        document.getElementById('fPerusahaan').value.trim(),
+      tujuan_datang:          document.getElementById('fTujuan').value.trim(),
+      nama_bagian_dikunjungi: document.getElementById('fBagian').value.trim(),
+      maksud_tujuan:          document.getElementById('fMaksud').value.trim(),
+    };
+    for (let i = 1; i <= TOTAL_Q; i++) {
+      payload[`q${i}`] = document.querySelector(`input[name="q${i}"]:checked`).value;
+    }
+
+    // Hitung hasil client-side — langsung tampil tanpa tunggu server
+    let yesCount = 0;
+    for (let i = 1; i <= TOTAL_Q; i++)
+      if (payload[`q${i}`] === 'ya') yesCount++;
+
+    showResult({
+      id:         null,
+      nama:       payload.nama_lengkap,
+      ktp:        payload.no_ktp,
+      perusahaan: payload.nama_perusahaan,
+      tujuan:     payload.tujuan_datang,
+      yesCount,
+      pctLabel:   Math.round((yesCount / TOTAL_Q) * 100),
+      passed:     (yesCount / TOTAL_Q) > 0.9,
+    });
+
+    // Simpan ke DB di background (tidak blokir result)
+    saveToServer(payload);
+  }
+
+  async function saveToServer(payload) {
+    try {
+      const res  = await fetch(BACKEND_URL, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(payload),
+      });
+
+      const text = await res.text();
+      let json;
+      try { json = JSON.parse(text); } catch(e) {
+        console.error('[SafetyInduction] Response bukan JSON:', text);
+        showDbStatus('Gagal: response server tidak valid', false);
+        return;
+      }
+
+      console.log('[SafetyInduction] Server response:', json);
+
+      if (res.ok && json.success && json.id) {
+        // Tampilkan No. Record di result table
+        const el = document.getElementById('recordId');
+        if (el) el.textContent = `#${json.id}`;
+        const rowEl = document.getElementById('rowRecordId');
+        if (rowEl) rowEl.style.display = 'flex';
+        showDbStatus(`Data tersimpan (Record #${json.id})`, true);
+      } else {
+        const msg = json.message || (json.errors ? json.errors.join(', ') : 'Gagal menyimpan');
+        console.error('[SafetyInduction] Gagal simpan:', msg);
+        showDbStatus('Gagal simpan ke DB: ' + msg, false);
+      }
+    } catch (err) {
+      console.error('[SafetyInduction] Network error:', err);
+      showDbStatus('Tidak dapat terhubung ke server', false);
+    }
+  }
+
+  function showDbStatus(msg, success) {
+    const el = document.getElementById('dbStatus');
+    if (!el) return;
+    el.textContent = (success ? '✅ ' : '⚠️ ') + msg;
+    el.style.color = success ? '#1e9e54' : '#d63031';
+    el.style.display = 'block';
+  }
+
+  /* Render result */
+  function showResult(d) {
+    document.getElementById('formSection').style.display = 'none';
+    const rs = document.getElementById('resultSection');
+    rs.style.display = 'block';
+
+    document.getElementById('rHead').innerHTML = d.passed
+      ? `<div class="result-head-pass">
+           <span class="result-icon-big">✅</span>
+           <div class="result-status">LOLOS</div>
+           <div class="result-sub">Safety Induction Puninar Logistics</div>
+         </div>`
+      : `<div class="result-head-fail">
+           <span class="result-icon-big">❌</span>
+           <div class="result-status">TIDAK LOLOS</div>
+           <div class="result-sub">Safety Induction Puninar Logistics</div>
+         </div>`;
+
+    document.getElementById('rScore').innerHTML =
+      `📊 Jawaban Ya: ${d.yesCount} / ${TOTAL_Q} &nbsp;|&nbsp; ${d.pctLabel}%`;
+
+    const now = new Date();
+    const tgl = now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+    const jam = now.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+
+    document.getElementById('rTable').innerHTML = `
+      <h4>Ringkasan Data</h4>
+      <div class="rt-row" id="rowRecordId" style="display:none"><span class="rt-key">No. Record</span><span class="rt-val" id="recordId" style="font-family:monospace"></span></div>
+      ${row('Nama',              esc(d.nama))}
+      ${row('No KTP',            esc(d.ktp))}
+      ${row('Perusahaan',        esc(d.perusahaan))}
+      ${row('Tujuan',            esc(d.tujuan))}
+      ${row('Tanggal &amp; Waktu', `${tgl}, ${jam}`)}
+      ${row('Jawaban Ya',        `${d.yesCount} dari ${TOTAL_Q} pertanyaan`)}
+      ${row('Status',
+        d.passed
+          ? `<span style="color:#1e9e54;font-weight:800;">✅ LOLOS</span>`
+          : `<span style="color:#d63031;font-weight:800;">❌ TIDAK LOLOS</span>`
+      )}
+    `;
+
+    document.getElementById('rMsg').innerHTML = d.passed
+      ? `Selamat! Anda berhasil menyelesaikan Safety Induction dengan skor <strong>${d.pctLabel}%</strong>.
+         Anda dinyatakan <strong>LOLOS</strong> dan diizinkan memasuki area Puninar Logistics.
+         Mohon selalu patuhi seluruh aturan keselamatan yang berlaku.<br><br>
+         <strong>Selamat bekerja dan bekerjalah dengan selamat!</strong>`
+      : `Mohon maaf, Anda <strong>TIDAK LOLOS</strong> Safety Induction Puninar Logistics.
+         Skor Anda <strong>${d.pctLabel}%</strong> belum memenuhi batas minimal (lebih dari 90%).
+         Harap pelajari kembali peraturan keselamatan dan hubungi petugas HSE untuk informasi lebih lanjut.`;
+
+    rs.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function row(k, v) {
+    return `<div class="rt-row"><span class="rt-key">${k}</span><span class="rt-val">${v}</span></div>`;
+  }
+  function esc(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* Reset */
+  function doReset() {
+    document.getElementById('resultSection').style.display = 'none';
+    const fs = document.getElementById('formSection');
+    fs.style.display = 'block';
+    FIELDS.forEach(({ id, eid }) => {
+      document.getElementById(id).value = '';
+      document.getElementById(id).classList.remove('is-error');
+      document.getElementById(eid).classList.remove('show');
+    });
+    document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+    document.querySelectorAll('.cl-item').forEach(el => el.classList.remove('highlight'));
+    document.getElementById('alertBox').classList.remove('show');
+    updateProgress();
+    fs.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+</script>
+</body>
+</html>
