@@ -1,6 +1,7 @@
 const { createClient } = require('@supabase/supabase-js');
 const XLSX       = require('xlsx');
 const nodemailer = require('nodemailer');
+const ws         = require('ws');
 
 // ── Config ────────────────────────────────────────────────────
 const SUPABASE_URL           = process.env.SUPABASE_URL;
@@ -24,7 +25,9 @@ async function main() {
   console.log(`[${new Date().toISOString()}] Mengirim laporan untuk tanggal ${dateLabel}`);
 
   // 2. Query Supabase
-  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
+    realtime: { transport: ws },
+  });
 
   const { data, error } = await supabase
     .from('safety_induction_records')
