@@ -799,10 +799,16 @@
   <div>Terima kasih telah melengkapi Safety Induction Puninar, selamat bekerja dan bekerjalah dengan selamat.</div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const TOTAL_Q   = 10;
-  // Ganti URL ini setelah Cloudflare Tunnel aktif
-  const BACKEND_URL = 'https://YOUR-TUNNEL.trycloudflare.com/backend/submit.php';
+  const TOTAL_Q = 10;
+
+  // ── Ganti dengan kredensial project Supabase kamu ──
+  const SUPABASE_URL      = 'https://xxkwmvmlyilnvokdmnrb.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4a3dtdm1seWlsbnZva2RtbnJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2Nzc4MTYsImV4cCI6MjA5NzI1MzgxNn0.1uNXt08t2OwR5HkeQgXI7VQM1w8mxQgys48OMptLsF4';
+  // ───────────────────────────────────────────────────
+
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   /* Progress */
   document.querySelectorAll('input[type="radio"]').forEach(r =>
@@ -895,43 +901,54 @@
       passed:     (yesCount / TOTAL_Q) > 0.9,
     });
 
-    // Simpan ke DB di background (tidak blokir result)
-    saveToServer(payload);
+    // Simpan ke Supabase di background (tidak blokir result)
+    saveToServer(payload, yesCount, (yesCount / TOTAL_Q) > 0.9);
   }
 
-  async function saveToServer(payload) {
+  async function saveToServer(payload, yesCount, passed) {
     try {
-      const res  = await fetch(BACKEND_URL, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(payload),
-      });
+      const record = {
+        nama_lengkap:           payload.nama_lengkap,
+        no_ktp:                 payload.no_ktp,
+        nama_perusahaan:        payload.nama_perusahaan,
+        tujuan_datang:          payload.tujuan_datang,
+        nama_bagian_dikunjungi: payload.nama_bagian_dikunjungi,
+        maksud_tujuan:          payload.maksud_tujuan,
+        q1:  payload.q1  === 'ya' ? 'Y' : 'T',
+        q2:  payload.q2  === 'ya' ? 'Y' : 'T',
+        q3:  payload.q3  === 'ya' ? 'Y' : 'T',
+        q4:  payload.q4  === 'ya' ? 'Y' : 'T',
+        q5:  payload.q5  === 'ya' ? 'Y' : 'T',
+        q6:  payload.q6  === 'ya' ? 'Y' : 'T',
+        q7:  payload.q7  === 'ya' ? 'Y' : 'T',
+        q8:  payload.q8  === 'ya' ? 'Y' : 'T',
+        q9:  payload.q9  === 'ya' ? 'Y' : 'T',
+        q10: payload.q10 === 'ya' ? 'Y' : 'T',
+        total_ya:   yesCount,
+        persentase: Math.round((yesCount / TOTAL_Q) * 10000) / 100,
+        status:     passed ? 'LOLOS' : 'TIDAK LOLOS',
+      };
 
-      const text = await res.text();
-      let json;
-      try { json = JSON.parse(text); } catch(e) {
-        console.error('[SafetyInduction] Response bukan JSON:', text);
-        showDbStatus('Gagal: response server tidak valid', false);
-        return;
-      }
+      const { data, error } = await db
+        .from('safety_induction_records')
+        .insert([record])
+        .select('id, created_at')
+        .single();
 
-      console.log('[SafetyInduction] Server response:', json);
+      if (error) throw error;
 
-      if (res.ok && json.success && json.id) {
-        // Tampilkan No. Record di result table
+      console.log('[SafetyInduction] Tersimpan:', data);
+
+      if (data?.id) {
         const el = document.getElementById('recordId');
-        if (el) el.textContent = `#${json.id}`;
+        if (el) el.textContent = `#${data.id}`;
         const rowEl = document.getElementById('rowRecordId');
         if (rowEl) rowEl.style.display = 'flex';
-        showDbStatus(`Data tersimpan (Record #${json.id})`, true);
-      } else {
-        const msg = json.message || (json.errors ? json.errors.join(', ') : 'Gagal menyimpan');
-        console.error('[SafetyInduction] Gagal simpan:', msg);
-        showDbStatus('Gagal simpan ke DB: ' + msg, false);
+        showDbStatus(`Data tersimpan (Record #${data.id})`, true);
       }
     } catch (err) {
-      console.error('[SafetyInduction] Network error:', err);
-      showDbStatus('Tidak dapat terhubung ke server', false);
+      console.error('[SafetyInduction] Supabase error:', err.message || err);
+      showDbStatus('Gagal simpan: ' + (err.message || 'Cek console untuk detail'), false);
     }
   }
 
