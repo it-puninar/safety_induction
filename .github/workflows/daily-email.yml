@@ -1,0 +1,36 @@
+name: Daily Safety Induction Report
+
+on:
+  schedule:
+    # Setiap hari jam 21:00 WIB = 14:00 UTC
+    - cron: '0 14 * * *'
+  # Tombol manual untuk testing
+  workflow_dispatch:
+
+jobs:
+  send-report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: scripts/package.json
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: scripts
+
+      - name: Send daily report
+        env:
+          SUPABASE_URL:              ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SMTP_PASS:                 ${{ secrets.SMTP_PASS }}
+        run: node send-daily-report.js
+        working-directory: scripts

@@ -1,2 +1,5 @@
 # Kredensial database — jangan pernah di-commit
 backend/config.php
+
+# Dependencies
+scripts/node_modules/
