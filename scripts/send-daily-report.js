@@ -16,10 +16,8 @@ const EMAIL_TO  = ['mariana@puninar.com', 'tsany.alauddin@puninar.com'];
 // ──────────────────────────────────────────────────────────────
 
 async function main() {
-  // 1. Rentang waktu hari ini (WIB)
-  const todayWIB = getTodayWIB();               // "2026-06-19"
-  const startISO = `${todayWIB}T00:00:00+07:00`;
-  const endISO   = `${todayWIB}T23:59:59+07:00`;
+  // 1. Rentang waktu hari ini (WIB) → dikonversi ke UTC murni
+  const { todayWIB, startUTC, endUTC } = getTodayRange();
   const dateLabel = formatDateLabel(todayWIB);  // "19/06/2026"
 
   console.log(`[${new Date().toISOString()}] Mengirim laporan untuk tanggal ${dateLabel}`);
@@ -32,8 +30,8 @@ async function main() {
   const { data, error } = await supabase
     .from('safety_induction_records')
     .select('nama_lengkap, no_ktp, nama_perusahaan, nama_bagian_dikunjungi, created_at')
-    .gte('created_at', startISO)
-    .lte('created_at', endISO)
+    .gte('created_at', startUTC)
+    .lte('created_at', endUTC)
     .order('created_at', { ascending: true });
 
   if (error) throw new Error('Supabase query error: ' + error.message);
@@ -118,13 +116,19 @@ async function main() {
 
 // ── Helpers ───────────────────────────────────────────────────
 
-function getTodayWIB() {
+function getTodayRange() {
   const now = new Date();
   const wib = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }));
   const yyyy = wib.getFullYear();
   const mm   = String(wib.getMonth() + 1).padStart(2, '0');
   const dd   = String(wib.getDate()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd}`;
+  const todayWIB = `${yyyy}-${mm}-${dd}`;
+
+  // Konversi ke UTC murni (hindari karakter '+' di URL query Supabase)
+  const startUTC = new Date(`${todayWIB}T00:00:00+07:00`).toISOString();
+  const endUTC   = new Date(`${todayWIB}T23:59:59.999+07:00`).toISOString();
+
+  return { todayWIB, startUTC, endUTC };
 }
 
 function formatDate(isoString) {
