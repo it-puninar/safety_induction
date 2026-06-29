@@ -1,9 +1,9 @@
-name: Daily Safety Induction Report
+name: Weekly Safety Induction Report
 
 on:
   schedule:
-    # Setiap hari jam 21:00 WIB = 14:00 UTC
-    - cron: '0 14 * * *'
+    # Setiap Minggu jam 21:00 WIB = 14:00 UTC (0 = Sunday)
+    - cron: '0 14 * * 0'
   # Tombol manual untuk testing
   workflow_dispatch:
 

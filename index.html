@@ -582,10 +582,11 @@
           <div class="err-msg" id="eNama">Nama lengkap wajib diisi</div>
         </div>
         <div class="form-group">
-          <label class="form-label" for="fKtp">2. No KTP <span class="req">*</span></label>
-          <div class="form-hint">Isi sesuai No KTP Anda</div>
-          <input type="text" id="fKtp" class="form-control" placeholder="16 digit nomor KTP" maxlength="16" inputmode="numeric" />
-          <div class="err-msg" id="eKtp">No KTP wajib diisi</div>
+          <label class="form-label" for="fKtp">2. No ID/KTP/Passport/Nopol/HP <span class="req">*</span></label>
+          <div class="form-hint">Isi nomor identitas Anda (KTP, Passport, Nopol, atau HP)</div>
+          <input type="text" id="fKtp" class="form-control" placeholder="No KTP / Passport / Nopol / HP" autocomplete="off" />
+          <div class="err-msg" id="eKtp">No ID wajib diisi</div>
+          <div id="validHint" style="font-size:12.5px;margin-top:6px;display:none;font-weight:600;padding:6px 10px;border-radius:7px;"></div>
         </div>
       </div>
 
@@ -810,6 +811,96 @@
 
   const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+  /* ── Cek validitas 6 bulan saat No ID di-blur ── */
+  document.getElementById('fKtp').addEventListener('blur', async function () {
+    const noId = this.value.trim();
+    const hint = document.getElementById('validHint');
+    if (!noId) { hint.style.display = 'none'; return; }
+
+    hint.textContent = '🔍 Memeriksa riwayat induction...';
+    hint.style.background = '#f0f0f0';
+    hint.style.color = '#6b6e8a';
+    hint.style.display = 'block';
+
+    const info = await checkInductionValidity(noId);
+    if (info) {
+      hint.textContent = `✅ Induction masih valid sampai ${info.validUntilLabel}`;
+      hint.style.background = '#e8f8ef';
+      hint.style.color = '#1e9e54';
+      setTimeout(() => showResultValid(info), 700);
+    } else {
+      hint.style.display = 'none';
+    }
+  });
+
+  async function checkInductionValidity(noId) {
+    try {
+      const sixMonthsAgo = new Date();
+      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+      const { data, error } = await db
+        .from('safety_induction_records')
+        .select('id, nama_lengkap, created_at')
+        .eq('no_ktp', noId)
+        .eq('status', 'LOLOS')
+        .gte('created_at', sixMonthsAgo.toISOString())
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (error || !data || data.length === 0) return null;
+
+      const last      = data[0];
+      const lastDate  = new Date(last.created_at);
+      const validUntil = new Date(lastDate);
+      validUntil.setMonth(validUntil.getMonth() + 6);
+
+      const fmtWIB = (d) => new Date(d.toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }))
+        .toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+
+      return {
+        namaLengkap:      last.nama_lengkap,
+        noId,
+        lastInductionLabel: fmtWIB(lastDate),
+        validUntilLabel:    fmtWIB(validUntil),
+      };
+    } catch { return null; }
+  }
+
+  function showResultValid(info) {
+    document.getElementById('formSection').style.display = 'none';
+    const rs = document.getElementById('resultSection');
+    rs.style.display = 'block';
+
+    document.getElementById('rHead').innerHTML = `
+      <div class="result-head-pass">
+        <span class="result-icon-big">🛡️</span>
+        <div class="result-status">LOLOS</div>
+        <div class="result-sub">Induction Masih Valid — Tidak Perlu Mengisi Ulang</div>
+      </div>`;
+
+    document.getElementById('rScore').innerHTML =
+      `🛡️ Induction Valid &nbsp;|&nbsp; Berlaku 6 Bulan`;
+
+    document.getElementById('rTable').innerHTML = `
+      <h4>Status Validitas Induction</h4>
+      ${row('Nama',               esc(info.namaLengkap || '-'))}
+      ${row('No ID',              esc(info.noId))}
+      ${row('Terakhir Induction', info.lastInductionLabel)}
+      ${row('Berlaku Sampai',     `<span style="color:#1e9e54;font-weight:800;">${info.validUntilLabel}</span>`)}
+      ${row('Status',             `<span style="color:#1e9e54;font-weight:800;">✅ MASIH VALID</span>`)}
+    `;
+
+    document.getElementById('rMsg').innerHTML =
+      `Selamat datang kembali! Data Safety Induction Anda masih valid dan tidak perlu diisi ulang.<br><br>
+       Masa berlaku induction Anda sampai <strong>${info.validUntilLabel}</strong>.<br><br>
+       <strong>Selamat bekerja dan bekerjalah dengan selamat!</strong>`;
+
+    const dbStatus = document.getElementById('dbStatus');
+    if (dbStatus) dbStatus.style.display = 'none';
+
+    rs.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   /* Progress */
   document.querySelectorAll('input[type="radio"]').forEach(r =>
     r.addEventListener('change', updateProgress)
@@ -989,7 +1080,7 @@
       <h4>Ringkasan Data</h4>
       <div class="rt-row" id="rowRecordId" style="display:none"><span class="rt-key">No. Record</span><span class="rt-val" id="recordId" style="font-family:monospace"></span></div>
       ${row('Nama',              esc(d.nama))}
-      ${row('No KTP',            esc(d.ktp))}
+      ${row('No ID',              esc(d.ktp))}
       ${row('Perusahaan',        esc(d.perusahaan))}
       ${row('Tujuan',            esc(d.tujuan))}
       ${row('Tanggal &amp; Waktu', `${tgl}, ${jam}`)}

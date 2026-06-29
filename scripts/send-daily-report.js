@@ -16,11 +16,10 @@ const EMAIL_TO  = ['mariana@puninar.com', 'tsany.alauddin@puninar.com'];
 // ──────────────────────────────────────────────────────────────
 
 async function main() {
-  // 1. Rentang waktu hari ini (WIB) → dikonversi ke UTC murni
-  const { todayWIB, startUTC, endUTC } = getTodayRange();
-  const dateLabel = formatDateLabel(todayWIB);  // "19/06/2026"
+  // 1. Rentang waktu minggu ini (Senin–Minggu WIB) → dikonversi ke UTC murni
+  const { startUTC, endUTC, weekLabel, fileDate } = getThisWeekRange();
 
-  console.log(`[${new Date().toISOString()}] Mengirim laporan untuk tanggal ${dateLabel}`);
+  console.log(`[${new Date().toISOString()}] Mengirim laporan minggu ${weekLabel}`);
 
   // 2. Query Supabase
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
@@ -37,11 +36,11 @@ async function main() {
   if (error) throw new Error('Supabase query error: ' + error.message);
 
   if (!data || data.length === 0) {
-    console.log('Tidak ada data hari ini. Email tidak dikirim.');
+    console.log(`Tidak ada data minggu ini (${weekLabel}). Email tidak dikirim.`);
     return;
   }
 
-  console.log(`Ditemukan ${data.length} record.`);
+  console.log(`Ditemukan ${data.length} record untuk minggu ${weekLabel}.`);
 
   // 3. Buat xlsx
   const rows = data.map((row, idx) => ({
@@ -75,7 +74,7 @@ async function main() {
   XLSX.utils.book_append_sheet(wb, ws, 'Safety Induction');
   const xlsxBuffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
 
-  const fileName = `Safety_Induction_${todayWIB.replace(/-/g, '')}.xlsx`;
+  const fileName = `Safety_Induction_${fileDate}.xlsx`;
 
   // 4. Kirim email via SMTP
   const transporter = nodemailer.createTransport({
@@ -92,12 +91,12 @@ async function main() {
   await transporter.sendMail({
     from:    `"Safety Induction System" <${SMTP_USER}>`,
     to:      EMAIL_TO.join(', '),
-    subject: `[Safety Induction] Laporan Harian — ${dateLabel}`,
+    subject: `[Safety Induction] Laporan Mingguan — ${weekLabel}`,
     html: `
       <p>Yth. Tim HSE Puninar Logistics,</p>
       <br>
-      <p>Terlampir data Safety Induction tanggal <strong>${dateLabel}</strong>.</p>
-      <p>Total pengunjung: <strong>${data.length} orang</strong></p>
+      <p>Terlampir data Safety Induction minggu <strong>${weekLabel}</strong>.</p>
+      <p>Total pengunjung minggu ini: <strong>${data.length} orang</strong></p>
       <br>
       <p>Regards,<br>
       <strong>Safety Induction System</strong><br>
@@ -111,24 +110,41 @@ async function main() {
   });
 
   console.log(`Email berhasil dikirim ke: ${EMAIL_TO.join(', ')}`);
-  console.log(`Attachment: ${fileName} (${data.length} baris)`);
+  console.log(`Attachment: ${fileName} (${data.length} baris, periode ${weekLabel})`);
 }
 
 // ── Helpers ───────────────────────────────────────────────────
 
-function getTodayRange() {
+function getThisWeekRange() {
   const now = new Date();
   const wib = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }));
-  const yyyy = wib.getFullYear();
-  const mm   = String(wib.getMonth() + 1).padStart(2, '0');
-  const dd   = String(wib.getDate()).padStart(2, '0');
-  const todayWIB = `${yyyy}-${mm}-${dd}`;
+
+  // Cari Senin minggu ini
+  const day = wib.getDay(); // 0=Sun,1=Mon,...,6=Sat
+  const daysToMon = day === 0 ? 6 : day - 1;
+
+  const monday = new Date(wib);
+  monday.setDate(wib.getDate() - daysToMon);
+
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+
+  const toStr = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const toLabel = (d) => { const [y,m,dd] = toStr(d).split('-'); return `${dd}/${m}/${y}`; };
+
+  const monStr = toStr(monday);
+  const sunStr = toStr(sunday);
 
   // Konversi ke UTC murni (hindari karakter '+' di URL query Supabase)
-  const startUTC = new Date(`${todayWIB}T00:00:00+07:00`).toISOString();
-  const endUTC   = new Date(`${todayWIB}T23:59:59.999+07:00`).toISOString();
+  const startUTC = new Date(`${monStr}T00:00:00+07:00`).toISOString();
+  const endUTC   = new Date(`${sunStr}T23:59:59.999+07:00`).toISOString();
 
-  return { todayWIB, startUTC, endUTC };
+  return {
+    startUTC,
+    endUTC,
+    weekLabel: `${toLabel(monday)} — ${toLabel(sunday)}`,
+    fileDate:  `${monStr.replace(/-/g,'')}_${sunStr.replace(/-/g,'')}`,
+  };
 }
 
 function formatDate(isoString) {
